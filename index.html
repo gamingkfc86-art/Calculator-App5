@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculator 3D Pro</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: black;
+  font-family: Arial;
+}
+
+/* Chrome height fix */
+.calculator {
+  display: flex;
+  flex-direction: column;
+  height: var(--app-height);
+}
+
+/* Top */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 12px;
+}
+
+.top-btn {
+  width: 45px;
+  height: 45px;
+  border-radius: 12px;
+  background: #2a2a2a;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 🔥 RED BUTTON */
+.red {
+  background: linear-gradient(145deg, #ff4d4d, #cc0000) !important;
+  color: white !important;
+  box-shadow: 4px 4px 10px #000, -2px -2px 6px #ff8080;
+}
+
+/* History */
+.history-box {
+  margin: 10px;
+  height: 100px;
+  background: #111;
+  border-radius: 15px;
+  padding: 10px;
+  color: white;
+  overflow-y: auto;
+  font-size: 14px;
+}
+
+/* Display */
+.display {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 10px 20px;
+  color: white;
+  font-size: 40px;
+}
+
+/* Buttons */
+.buttons {
+  padding: 10px 10px 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+/* 🔥 3D BUTTON */
+.btn {
+  height: 65px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #3a3a3a, #1f1f1f);
+  color: white;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 5px 5px 10px #000, -3px -3px 6px #444;
+  transition: all 0.15s ease;
+}
+
+/* 🔥 PRESS EFFECT */
+.btn:active {
+  transform: scale(0.92);
+  box-shadow: inset 3px 3px 6px #000, inset -2px -2px 4px #444;
+}
+
+/* Colors */
+.orange {
+  background: linear-gradient(145deg, #ffb347, #ff9500);
+  box-shadow: 4px 4px 10px #000, -2px -2px 6px #ffcc80;
+}
+
+.gray {
+  background: linear-gradient(145deg, #d9d9d9, #a6a6a6);
+  color: black;
+}
+
+/* Zero */
+.zero {
+  grid-column: span 2;
+  border-radius: 35px;
+  justify-content: flex-start;
+  padding-left: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="calculator">
+
+  <div class="top-bar">
+    <div class="top-btn" onclick="toggleHistory()">📁</div>
+    <div class="top-btn" onclick="togglePower()" id="powerBtn">ON</div>
+    <div class="top-btn red" onclick="clearHistory()">C</div>
+  </div>
+
+  <div class="history-box" id="history"></div>
+
+  <div class="display" id="display">0</div>
+
+  <div class="buttons">
+    <div class="grid">
+
+      <div class="btn red" onclick="clearAll()">AC</div>
+      <div class="btn gray" onclick="toggleSign()">±</div>
+      <div class="btn gray" onclick="percentage()">%</div>
+      <div class="btn orange" onclick="input('/')">÷</div>
+
+      <div class="btn" onclick="input('7')">7</div>
+      <div class="btn" onclick="input('8')">8</div>
+      <div class="btn" onclick="input('9')">9</div>
+      <div class="btn orange" onclick="input('*')">×</div>
+
+      <div class="btn" onclick="input('4')">4</div>
+      <div class="btn" onclick="input('5')">5</div>
+      <div class="btn" onclick="input('6')">6</div>
+      <div class="btn orange" onclick="input('-')">−</div>
+
+      <div class="btn" onclick="input('1')">1</div>
+      <div class="btn" onclick="input('2')">2</div>
+      <div class="btn" onclick="input('3')">3</div>
+      <div class="btn orange" onclick="input('+')">+</div>
+
+      <div class="btn zero" onclick="input('0')">0</div>
+      <div class="btn" onclick="input('.')">.</div>
+      <div class="btn orange" onclick="calculate()">=</div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* Chrome height fix */
+function setAppHeight() {
+  document.documentElement.style
+    .setProperty('--app-height', `${window.innerHeight}px`);
+}
+window.addEventListener('resize', setAppHeight);
+setAppHeight();
+
+/* Elements */
+let display = document.getElementById("display");
+let historyBox = document.getElementById("history");
+let powerBtn = document.getElementById("powerBtn");
+
+let exp = "";
+let isOn = true;
+
+/* Input */
+function input(v){
+  if(!isOn) return;
+  exp += v;
+  display.innerText = exp;
+}
+
+/* Calculate */
+function calculate(){
+  if(!isOn) return;
+  try{
+    let result = eval(exp);
+
+    let item = document.createElement("div");
+    item.innerText = exp + " = " + result;
+    historyBox.appendChild(item);
+
+    historyBox.scrollTop = historyBox.scrollHeight;
+
+    exp = result.toString();
+    display.innerText = exp;
+
+  }catch{
+    display.innerText="Error";
+    exp="";
+  }
+}
+
+/* AC */
+function clearAll(){
+  if(!isOn) return;
+  exp="";
+  display.innerText="0";
+}
+
+/* Clear History */
+function clearHistory(){
+  historyBox.innerHTML="";
+}
+
+/* Toggle History */
+function toggleHistory(){
+  historyBox.style.display =
+    historyBox.style.display === "none" ? "block" : "none";
+}
+
+/* Power */
+function togglePower(){
+  isOn = !isOn;
+
+  if(isOn){
+    display.innerText="0";
+    powerBtn.innerText="ON";
+  } else {
+    display.innerText="";
+    powerBtn.innerText="OFF";
+  }
+}
+
+/* +/- */
+function toggleSign(){
+  if(!isOn) return;
+  if(exp){
+    exp=(-eval(exp)).toString();
+    display.innerText=exp;
+  }
+}
+
+/* % */
+function percentage(){
+  if(!isOn) return;
+  if(exp){
+    exp=(eval(exp)/100).toString();
+    display.innerText=exp;
+  }
+}
+
+/* 🔥 Vibration */
+document.querySelectorAll('.btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (navigator.vibrate) navigator.vibrate(20);
+  });
+});
+</script>
+
+</body>
+</html>
